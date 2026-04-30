@@ -6,12 +6,12 @@
 <title>Taskmaster Explorer</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0d0d0d;--surface:#1a1a1a;--surface2:#242424;--surface3:#2e2e2e;--border:#333;--text:#e0e0e0;--text-dim:#888;--accent:#00d4aa;--accent2:#ff6b6b;--gold:#ffd700;--solo:#4fc3f7;--team:#ab47bc;--live:#ff7043;--prize:#ffd54f;--special:#69f0ae}
+:root{--bg:#000000;--surface:#101010;--surface2:#1a1a1a;--surface3:#252525;--border:#304040;--text:#e0f0f0;--text-dim:#607070;--accent:#cc0000;--accent2:#900000;--gold:#cc0000;--solo:#90b0a0;--team:#ab47bc;--live:#cc0000;--prize:#e0c060;--special:#607070;--team-live:linear-gradient(135deg,#ab47bc,#cc0000)}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
 
-.header{text-align:center;padding:3rem 1rem 2rem;background:linear-gradient(180deg,#1a1a2e 0%,var(--bg) 100%);border-bottom:1px solid var(--border)}
+.header{text-align:center;padding:3rem 1rem 2rem;background:linear-gradient(180deg,#1a0000 0%,var(--bg) 100%);border-bottom:1px solid var(--border)}
 .header h1{font-size:2.5rem;font-weight:700;letter-spacing:-1px;color:#fff}
 .header h1 span{color:var(--accent)}
 .header .subtitle{color:var(--text-dim);font-size:1rem;margin-top:.5rem}
@@ -55,7 +55,7 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
 .card-video .placeholder{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--surface2);color:var(--text-dim);font-size:.85rem;cursor:pointer}
 .card-video .placeholder:hover{background:var(--surface3)}
 .play-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;pointer-events:none;transition:background .15s}
-.card-video .placeholder:hover .play-overlay{background:rgba(255,0,0,.8)}
+.card-video .placeholder:hover .play-overlay{background:rgba(204,0,0,.9)}
 .card-video .placeholder img{width:100%;height:100%;object-fit:cover;opacity:.7}
 
 .card-body{padding:.75rem 1rem 1rem}
@@ -68,7 +68,7 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
 .badge-special{background:var(--special);color:#000}
 .badge-team-live{background:linear-gradient(135deg,var(--team),var(--live));color:#fff}
 .badge-fav{background:transparent;border:1px solid var(--gold);color:var(--gold);display:flex;align-items:center;gap:.2rem}
-.badge-party{background:#2d1f4e;border:1px solid #9b59b6;color:#d4aaff;font-size:.65rem}
+.badge-party{background:#1a0a0a;border:1px solid var(--accent);color:#e0a0a0;font-size:.65rem}
 .legend-toggle{margin-top:.75rem;font-size:.85rem;color:var(--text-dim);border-color:var(--border)}
 .legend-toggle:hover{color:var(--text);border-color:var(--accent)}
 .legend{max-width:700px;margin:.75rem auto 0;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;font-size:.85rem}
@@ -76,9 +76,9 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
 .legend dl{display:grid;grid-template-columns:auto 1fr;gap:.4rem .75rem}
 .legend dt{color:var(--accent);font-weight:600;white-space:nowrap}
 .legend dd{color:var(--text-dim);margin:0;line-height:1.4}
-.party-info{margin-top:.4rem;font-size:.75rem;padding:.3rem .5rem;background:#1a1a2e;border-radius:4px;border-left:3px solid #9b59b6}
-.party-label{color:#9b59b6;font-weight:600}
-.party-stats{color:#d4aaff;font-family:monospace;font-size:.7rem}
+.party-info{margin-top:.4rem;font-size:.75rem;padding:.3rem .5rem;background:#1a0a0a;border-radius:4px;border-left:3px solid var(--accent)}
+.party-label{color:var(--accent);font-weight:600}
+.party-stats{color:#e0a0a0;font-family:monospace;font-size:.7rem}
 .party-note{color:var(--text-dim)}
 .badge-fav::before{content:'▶'}
 .badge-id{background:var(--surface3);color:var(--text-dim)}
@@ -96,8 +96,8 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
 .card-summary summary:hover{opacity:1;color:var(--accent)}
 .card-summary p{margin-top:.3rem}
 .card-actions{margin-top:.6rem;display:flex;gap:.5rem}
-.watch-btn{display:inline-flex;align-items:center;gap:.3rem;background:var(--accent);color:#000;padding:.3rem .7rem;border-radius:6px;font-size:.8rem;font-weight:600;border:none;cursor:pointer;text-decoration:none}
-.watch-btn:hover{background:#00eabb;text-decoration:none}
+.watch-btn{display:inline-flex;align-items:center;gap:.3rem;background:var(--accent);color:#fff;padding:.3rem .7rem;border-radius:6px;font-size:.8rem;font-weight:600;border:none;cursor:pointer;text-decoration:none}
+.watch-btn:hover{background:#e00000;text-decoration:none}
 .wiki-btn{display:inline-flex;align-items:center;gap:.3rem;background:var(--surface3);color:var(--text-dim);padding:.3rem .7rem;border-radius:6px;font-size:.8rem;font-weight:500;border:none;cursor:pointer;text-decoration:none}
 .wiki-btn:hover{background:var(--border);color:var(--text);text-decoration:none}
 
@@ -167,10 +167,10 @@ const SEASON_CASTS = {"s04": "Hugh Dennis, Joe Lycett, Lolly Adefope, Mel Giedro
 const SEASON_ORDER = ["s04", "s05", "s07", "nz-s02", "s19", "s20"];
 
 function heatmapColor(v) {
-  if (v >= 0.8) return '#ff4444';
-  if (v >= 0.6) return '#ff8800';
-  if (v >= 0.4) return '#ffcc00';
-  return '#66bb6a';
+  if (v >= 0.8) return '#cc0000';
+  if (v >= 0.6) return '#900000';
+  if (v >= 0.4) return '#603030';
+  return '#304040';
 }
 
 function makeCard(task) {
