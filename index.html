@@ -30,20 +30,6 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
 
 .container{max-width:1200px;margin:0 auto;padding:1rem}
 
-/* Hall of Fame */
-.hof{margin:2rem 0 3rem}
-.hof h2{font-size:1.6rem;color:var(--gold);margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
-.hof h2::before{content:'★';font-size:1.4rem}
-.hof .hof-subtitle{color:var(--text-dim);font-size:.85rem;margin-bottom:1rem}
-.hof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}
-.hof-item{background:var(--surface);border:1px solid var(--gold);border-radius:10px;cursor:pointer;transition:transform .15s,border-color .15s;overflow:hidden}
-.hof-item:hover{transform:translateY(-3px);border-color:#fff}
-.hof-item .hof-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
-.hof-item .hof-body{padding:.5rem .65rem .6rem}
-.hof-item .hof-id{color:var(--accent);font-size:.65rem;font-family:monospace}
-.hof-item .hof-desc{font-size:.8rem;color:var(--text);line-height:1.3;margin-top:.2rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.hof-item .hof-meta{display:flex;gap:.4rem;margin-top:.35rem;align-items:center}
-.hof-item .hof-meta .badge{font-size:.6rem}
 
 .season-section{margin-bottom:2rem}
 .season-header{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;user-select:none;margin-bottom:.5rem}
@@ -62,8 +48,7 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
 /* Task card */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:transform .15s,border-color .15s}
 .card:hover{transform:translateY(-2px);border-color:var(--accent)}
-.card.hof-card{border-color:var(--gold)}
-.card.hof-card:hover{border-color:#fff}
+
 
 .card-video{position:relative;width:100%;padding-top:56.25%;background:#000}
 .card-video iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
@@ -122,8 +107,7 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
   .header h1{font-size:1.6rem}
   .controls{gap:.35rem;padding:.5rem}
   .controls input[type=text]{width:100%}
-  .hof-grid{grid-template-columns:repeat(2,1fr);gap:.5rem}
-  .task-grid{grid-template-columns:1fr}
+.task-grid{grid-template-columns:1fr}
   .card-body{padding:.6rem .75rem .75rem}
 }
 </style>
@@ -144,8 +128,6 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
       <dd><b>S</b> = Safety (5=zero risk, 1=dangerous). <b>E</b> = Equipment (5=nothing needed, 1=impractical). <b>F</b> = Fun (5=everyone laughing, 1=boring solo). Hover any badge for the full breakdown.</dd>
       <dt>Task types</dt>
       <dd><span class="badge badge-prize" style="display:inline">Prize</span> Bring something from home. <span class="badge badge-solo" style="display:inline">Solo</span> Individual timed challenge. <span class="badge badge-team" style="display:inline">Team</span> Teams compete. <span class="badge badge-live" style="display:inline">Live</span> Studio audience task. <span class="badge badge-special" style="display:inline">Special</span> Secret or long-running.</dd>
-      <dt>Hall of Fame</dt>
-      <dd>Top 20 highest-engagement crowd-favorite tasks across all six seasons.</dd>
     </dl>
   </div>
 </div>
@@ -172,11 +154,6 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
 </div>
 
 <div class="container">
-  <div class="hof" id="hof">
-    <h2>Hall of Fame</h2>
-    <p class="hof-subtitle">The 20 most-replayed task moments across all six seasons</p>
-    <div class="hof-grid" id="hofGrid"></div>
-  </div>
   <div id="seasons"></div>
   <div class="no-results" id="noResults" style="display:none">No tasks match your filters.</div>
 </div>
@@ -196,13 +173,13 @@ function heatmapColor(v) {
   return '#66bb6a';
 }
 
-function makeCard(task, isHof) {
+function makeCard(task) {
   const thumbUrl = task.thumbnail_url || ('https://img.youtube.com/vi/' + task.video_id + '/mqdefault.jpg');
   const embedUrl = task.embed_url;
   const pct = Math.round(task.heatmap_peak_value * 100);
   const color = heatmapColor(task.heatmap_peak_value);
 
-  return '<div class="card' + (isHof ? ' hof-card' : '') + '" data-id="' + task.id + '">' +
+  return '<div class="card" data-id="' + task.id + '">' +
     '<div class="card-video" data-embed="' + embedUrl + '">' +
       '<div class="placeholder" onclick="loadVideo(this)">' +
         '<img src="' + thumbUrl + '" alt="thumbnail" loading="lazy">' +
@@ -285,34 +262,6 @@ function getFilteredTasks() {
 
 function render() {
   const filtered = getFilteredTasks();
-  const filteredIds = new Set(filtered.map(t => t.id));
-
-  // Hall of Fame: top 20 by heatmap engagement
-  const hofTasks = TASKS.slice()
-    .sort((a,b) => b.heatmap_peak_value - a.heatmap_peak_value)
-    .slice(0, 20)
-    .filter(t => filteredIds.has(t.id));
-
-  const hofEl = document.getElementById('hof');
-  const hofGrid = document.getElementById('hofGrid');
-  if (hofTasks.length > 0) {
-    hofEl.style.display = '';
-    hofGrid.innerHTML = hofTasks.map(t => {
-      const thumb = t.thumbnail_url || ('https://i.ytimg.com/vi/' + t.video_id + '/hqdefault.jpg');
-      return '<div class="hof-item" onclick="scrollToTask(\'' + t.id + '\')">' +
-        '<img class="hof-thumb" src="' + thumb + '" alt="" loading="lazy">' +
-        '<div class="hof-body">' +
-          '<div class="hof-id">' + t.id + '</div>' +
-          '<div class="hof-desc">' + escHtml(t.task_description) + '</div>' +
-          '<div class="hof-meta">' +
-            '<span class="badge badge-' + t.task_type + '">' + t.task_type + '</span>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-  } else {
-    hofEl.style.display = 'none';
-  }
 
   // Seasons
   const seasonsEl = document.getElementById('seasons');
@@ -344,7 +293,7 @@ function render() {
       html += '<div class="episode-group">';
       html += '<div class="episode-title">E' + String(ep.num).padStart(2,'0') + ' &mdash; ' + escHtml(ep.title) + '</div>';
       html += '<div class="task-grid">';
-      ep.tasks.forEach(t => { html += makeCard(t, false); });
+      ep.tasks.forEach(t => { html += makeCard(t); });
       html += '</div></div>';
     }
 
