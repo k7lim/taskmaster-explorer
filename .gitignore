@@ -1,0 +1,15 @@
+# Raw YouTube metadata and subtitles (large, not for redistribution)
+s04/
+s05/
+s07/
+nz-s02/
+s19/
+s20/
+
+# Intermediate files
+episodes-index.json
+tasks-index.json
+tasks-index-llm-scored.json
+
+# OS
+.DS_Store
