@@ -32,9 +32,16 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
 
 /* Hall of Fame */
 .hof{margin:2rem 0 3rem}
-.hof h2{font-size:1.6rem;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.hof h2{font-size:1.6rem;color:var(--gold);margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
 .hof h2::before{content:'★';font-size:1.4rem}
-.hof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1rem}
+.hof .hof-subtitle{color:var(--text-dim);font-size:.85rem;margin-bottom:1rem}
+.hof-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem}
+.hof-item{background:var(--surface);border:1px solid var(--gold);border-radius:8px;padding:.5rem .65rem;cursor:pointer;transition:transform .15s,background .15s;display:flex;flex-direction:column;gap:.3rem}
+.hof-item:hover{transform:translateY(-2px);background:var(--surface2)}
+.hof-item .hof-rank{color:var(--gold);font-size:.7rem;font-weight:700}
+.hof-item .hof-id{color:var(--accent);font-size:.7rem;font-family:monospace}
+.hof-item .hof-desc{font-size:.75rem;color:var(--text);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hof-item .hof-type{font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim)}
 
 .season-section{margin-bottom:2rem}
 .season-header{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;user-select:none;margin-bottom:.5rem}
@@ -113,7 +120,8 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
   .header h1{font-size:1.6rem}
   .controls{gap:.35rem;padding:.5rem}
   .controls input[type=text]{width:100%}
-  .hof-grid,.task-grid{grid-template-columns:1fr}
+  .hof-grid{grid-template-columns:repeat(2,1fr)}
+  .task-grid{grid-template-columns:1fr}
   .card-body{padding:.6rem .75rem .75rem}
 }
 </style>
@@ -164,6 +172,7 @@ select{background:var(--surface2);border:1px solid var(--border);color:var(--tex
 <div class="container">
   <div class="hof" id="hof">
     <h2>Hall of Fame</h2>
+    <p class="hof-subtitle">The 20 most-replayed task moments across all six seasons</p>
     <div class="hof-grid" id="hofGrid"></div>
   </div>
   <div id="seasons"></div>
@@ -224,6 +233,28 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function scrollToTask(taskId) {
+  // Extract season from task ID (e.g., "s05-e03-t04" -> "s05")
+  const season = taskId.replace(/-e\d+.*/, '');
+  // Expand the season if collapsed
+  const section = document.querySelector('.season-section[data-season="' + season + '"]');
+  if (section) {
+    const header = section.querySelector('.season-header');
+    const body = section.querySelector('.season-body');
+    if (body && body.classList.contains('hidden')) {
+      body.classList.remove('hidden');
+      header.classList.remove('collapsed');
+    }
+  }
+  // Find the card
+  const card = document.querySelector('.card[data-id="' + taskId + '"]');
+  if (card) {
+    card.scrollIntoView({behavior: 'smooth', block: 'center'});
+    card.style.outline = '2px solid var(--gold)';
+    setTimeout(() => { card.style.outline = ''; }, 2000);
+  }
+}
+
 function loadVideo(el) {
   const container = el.parentElement;
   const url = container.dataset.embed;
@@ -264,7 +295,14 @@ function render() {
   const hofGrid = document.getElementById('hofGrid');
   if (hofTasks.length > 0) {
     hofEl.style.display = '';
-    hofGrid.innerHTML = hofTasks.map(t => makeCard(t, true)).join('');
+    hofGrid.innerHTML = hofTasks.map((t, i) =>
+      '<div class="hof-item" onclick="scrollToTask(\'' + t.id + '\')">' +
+        '<div class="hof-rank">#' + (i+1) + '</div>' +
+        '<div class="hof-id">' + t.id + '</div>' +
+        '<div class="hof-desc">' + escHtml(t.task_description) + '</div>' +
+        '<div class="hof-type">' + t.task_type + '</div>' +
+      '</div>'
+    ).join('');
   } else {
     hofEl.style.display = 'none';
   }
@@ -314,19 +352,6 @@ function render() {
 }
 
 function setupLazyLoad() {
-  // We use click-to-load instead of auto-load for performance
-  // But for HoF cards, auto-load when visible
-  if (!('IntersectionObserver' in window)) return;
-  const hofCards = document.querySelectorAll('.hof-card .card-video .placeholder');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Don't auto-load, just mark as visible
-        observer.unobserve(entry.target);
-      }
-    });
-  }, {rootMargin: '200px'});
-  hofCards.forEach(el => observer.observe(el));
 }
 
 function toggleSeason(header) {
@@ -366,7 +391,8 @@ document.querySelectorAll('[data-jump]').forEach(btn => {
         body.classList.remove('hidden');
         header.classList.remove('collapsed');
       }
-      section.scrollIntoView({behavior: 'smooth', block: 'start'});
+      const y = section.getBoundingClientRect().top + window.scrollY - document.getElementById('controls').offsetHeight - 10;
+      window.scrollTo({top: y, behavior: 'smooth'});
     }
   });
 });
